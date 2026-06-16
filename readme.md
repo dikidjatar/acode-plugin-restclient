@@ -70,7 +70,7 @@ REST Client plugin also provides the flexibility that you can send the request w
 
 ## Making Request
 
-![rest-client](https://raw.githubusercontent.com/dikidjatar/acode-plugin-rest-client/main/images/usage.gif)
+![rest-client](https://raw.githubusercontent.com/dikidjatar/acode-plugin-restclient/main/images/usage.gif)
 
 ### Request Line
 
@@ -146,7 +146,7 @@ name=foo
 
 ## Making cURL Request
 
-![cURL Request](https://raw.githubusercontent.com/dikidjatar/acode-plugin-rest-client/main/images/curl-request.png)
+![cURL Request](https://raw.githubusercontent.com/dikidjatar/acode-plugin-restclient/main/images/curl-request.png)
 We add the capability to directly run [curl request](https://curl.haxx.se/) in REST Client plugin. The issuing request command is the same as raw HTTP one. REST Client will automatically parse the request with specified parser.
 
 `REST Client` doesn't fully support all the options of `cURL`, since underneath we use `request` library to send request which doesn't accept all the `cURL` options. Supported options are listed below:

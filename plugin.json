@@ -4,7 +4,7 @@
   "name": "REST Client",
   "main": "main.js",
   "version": "1.0.0",
-  "repository": "https://github.com/dikidjatar/acode-plugin-rest-client.git",
+  "repository": "https://github.com/dikidjatar/acode-plugin-restclient.git",
   "icon": "icon.png",
   "minVersionCode": 290,
   "license": "MIT",
