@@ -1,0 +1,21 @@
+:root {
+  --container-paddding: 20px;
+}
+
+.rest-client-container {
+  padding: 0 var(--container-paddding);
+}
+
+a {
+  color: var(--link-text-color);
+}
+
+code {
+  background: inherit;
+  display: block;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  display: block;
+  padding: 10px;
+}

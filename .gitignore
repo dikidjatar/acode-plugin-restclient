@@ -1,0 +1,9 @@
+/node_modules
+/testing
+
+/dist/main.js
+/yarn.lock
+/package-lock.json
+/dist.zip
+/plugin.zip
+/pnpm-lock.yaml

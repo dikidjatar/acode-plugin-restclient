@@ -1,0 +1,41 @@
+{
+  "name": "acode-plugin-rest-client",
+  "version": "1.0.0",
+  "description": "REST Client for Acode Editor",
+  "main": "dist/main.js",
+  "repository": "https://github.com/dikidjatar/acode-plugin-rest-client.git",
+  "author": "Diki Djatar",
+  "license": "MIT",
+  "dependencies": {
+    "acode-plugin-types": "^1.12.4",
+    "encodeurl": "^2.0.0",
+    "highlight.js": "^11.11.1",
+    "html-tag-js": "^1.8.2",
+    "js-beautify": "^1.15.4",
+    "jsonc-parser": "^3.3.1",
+    "jsonpath-plus": "^10.4.0",
+    "xpath": "^0.0.34",
+    "yargs-parser": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/encodeurl": "^1.0.3",
+    "@types/js-beautify": "^1.14.3",
+    "@types/node": "^25.9.2",
+    "@types/yargs-parser": "^21.0.3",
+    "esbuild": "^0.27.2",
+    "jszip": "^3.10.1",
+    "typescript": "^5.7.2"
+  },
+  "scripts": {
+    "dev": "node esbuild.config.mjs --serve",
+    "build": "tsc --noEmit && node esbuild.config.mjs",
+    "clean": "node scripts/clean.js"
+  },
+  "browserslist": [
+    "> 0.25%, not dead"
+  ],
+  "resolutions": {
+    "terser": ">=5.14.2 ",
+    "glob-parent": ">=5.1.2"
+  }
+}

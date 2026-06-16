@@ -1,0 +1,19 @@
+import { getContentType } from "../utils/misc";
+import { ResponseHeaders } from "./base";
+import { HttpRequest } from "./httpRequest";
+
+export class HttpResponse {
+  public constructor(
+    public statusCode: number,
+    public statusMessage: string,
+    public httpVersion: string,
+    public headers: ResponseHeaders,
+    public body: string,
+    public timeTaken: number,
+    public request: HttpRequest
+  ) {}
+
+  public get contentType(): string | undefined {
+    return getContentType(this.headers);
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://acode.app/schema/plugin/v0.1.0.json",
+  "id": "acode.plugin.rest.client",
+  "name": "REST Client",
+  "main": "main.js",
+  "version": "1.0.0",
+  "repository": "https://github.com/dikidjatar/acode-plugin-rest-client.git",
+  "icon": "icon.png",
+  "minVersionCode": 290,
+  "license": "MIT",
+  "changelogs": "changelogs.md",
+  "keywords": ["REST Client", "API", "HTTP"],
+  "price": 0,
+  "author": {
+    "name": "Diki Djatar",
+    "email": "dikidjatar@gmail.com",
+    "github": "dikidjatar"
+  }
+}

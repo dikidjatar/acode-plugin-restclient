@@ -1,0 +1,84 @@
+pre .hljs-comment {
+  color: #57a64a;
+  font-style: italic;
+}
+
+pre .hljs-attribute {
+  color: #cc6666;
+}
+
+pre .hljs-attr {
+  color: #f0c674;
+}
+
+pre .hljs-number,
+pre .hljs-literal {
+  color: #de935f;
+}
+
+pre .hljs-string {
+  color: #b5bd68;
+}
+
+pre .hljs-name {
+  color: #007acc;
+}
+
+pre .hljs-meta,
+pre .hljs-tag,
+pre .hljs-keyword {
+  color: #b294bb;
+}
+
+pre .hljs-emphasis {
+  font-style: italic;
+}
+
+pre .hljs-strong {
+  font-weight: bold;
+}
+
+pre code {
+  color: #c5c8c6;
+}
+
+.line .icon {
+  position: absolute;
+  display: inline-block;
+  left: calc(2ch + 3px);
+  top: 0.15em;
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+}
+
+code .line {
+  display: inline-block;
+  position: relative;
+  padding-left: calc(2ch + 20px);
+}
+
+code .line.hidden-line {
+  display: none;
+}
+
+code .line:after {
+  content: " ";
+}
+
+code .line:before {
+  box-sizing: content-box;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  text-align: right;
+  width: 2ch;
+  content: attr(start);
+  padding-right: 9px;
+  padding-left: 9px;
+  margin-left: calc(-2ch + -30px);
+  margin-right: 9px;
+  color: #787878;
+  background-color: inherit;
+}

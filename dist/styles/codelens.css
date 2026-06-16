@@ -1,0 +1,24 @@
+.rest-client-codelens {
+  display: block;
+  line-height: 1.4;
+  padding-bottom: 0;
+  padding-left: 6px;
+  padding-right: 2px;
+  padding-top: 0;
+}
+
+.rest-client-codelens-button {
+  display: inline-block;
+  padding: 0 6px;
+  font-size: 0.85em;
+  color: #999999;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.8;
+}
+
+.rest-client-codelens-button:hover,
+.rest-client-codelens-button:active {
+  opacity: 1;
+  color: #5a8dee;
+}
