@@ -44,6 +44,7 @@ export class HttpResponseView {
       this.editorFiles.push(editorFile);
     } else {
       editorFile = this.editorFiles[this.editorFiles.length - 1];
+      editorFile.filename = this.getTitle(response);
     }
 
     this.container.innerHTML = this.getHtmlForWebview(response);
