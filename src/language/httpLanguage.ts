@@ -1,8 +1,9 @@
-import { StreamParser, StringStream } from "@codemirror/language";
+import { LanguageSupport, StreamLanguage, StreamParser, StringStream } from "@codemirror/language";
+import { Compartment, Extension } from "@codemirror/state";
 
-export type HttpLanguageMode = "top" | "json" | "xml" | "curl";
+type HttpLanguageMode = "top" | "json" | "xml" | "curl";
 
-export type HttpLanguageLineKind =
+type HttpLanguageLineKind =
   | "metaComment"
   | "query"
   | "header"
@@ -11,7 +12,7 @@ export type HttpLanguageLineKind =
   | "response"
   | null;
 
-export interface HttpLanguageState {
+interface HttpLanguageState {
   mode: HttpLanguageMode;
   lineKind: HttpLanguageLineKind;
   lineStep: number;
@@ -471,7 +472,7 @@ function token(stream: StringStream, state: HttpLanguageState): string | null {
   return type;
 }
 
-export const httpStreamParser: StreamParser<HttpLanguageState> = {
+const httpStreamParser: StreamParser<HttpLanguageState> = {
   name: "http",
   startState,
   copyState,
@@ -479,5 +480,15 @@ export const httpStreamParser: StreamParser<HttpLanguageState> = {
   blankLine,
   languageData: {
     commentTokens: { line: "#" },
+    closeBrackets: {
+      brackets: ["(", "[", "{", "'", '"']
+    }
   },
 };
+
+export function httpLanguage(): Extension {
+  const httpLanguageStream = StreamLanguage.define(httpStreamParser);
+  const httpLanguage = new LanguageSupport(httpLanguageStream);
+  const httpLanguageCompartment = new Compartment();
+  return httpLanguageCompartment.of(httpLanguage);
+}
