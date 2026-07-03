@@ -1,6 +1,6 @@
 {
   "name": "acode-plugin-restclient",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "REST Client for Acode Editor",
   "main": "dist/main.js",
   "repository": "https://github.com/dikidjatar/acode-plugin-restclient.git",
