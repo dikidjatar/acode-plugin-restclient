@@ -77,6 +77,27 @@ class AcodePlugin {
         return undefined;
       },
     });
+    commands.addCommand({
+      name: "rest-client.copy-response-body",
+      description: "Rest Client: Copy Response Body",
+      exec: async () => {
+        await this.requestController.responseView.copyBody();
+      },
+    });
+    commands.addCommand({
+      name: "rest-client.save-response",
+      description: "Rest Client: Save Response",
+      exec: async () => {
+        await this.requestController.responseView.save();
+      },
+    });
+    commands.addCommand({
+      name: "rest-client.save-response-body",
+      description: "Rest Client: Save Response Body",
+      exec: async () => {
+        await this.requestController.responseView.saveBody();
+      },
+    });
   }
 
   private registerListeners(): void {
@@ -99,7 +120,11 @@ class AcodePlugin {
 
   destroy() {
     try {
+      this.requestController.responseView.dispose();
       commands.removeCommand("rest-client.request");
+      commands.removeCommand("rest-client.copy-response-body");
+      commands.removeCommand("rest-client.save-response");
+      commands.removeCommand("rest-client.save-response-body");
       editorLanguages.unregister("http");
       editorManager.off("new-file", this.dispatchView);
       editorManager.off("switch-file", this.dispatchView);
@@ -112,19 +137,19 @@ class AcodePlugin {
 }
 
 function restClientSettings(): Acode.PluginSettings {
-  const settings = appSettings.get("restClient")!;
+  const restClientSettings = appSettings.get("restClient")!;
 
   return {
     list: [
       {
         key: "followRedirect",
-        checkbox: settings.followRedirect,
+        checkbox: restClientSettings.followRedirect,
         text: "Followredirect",
         info: "Follow HTTP 3xx responses as redirects.",
       },
       {
         key: "defaultHeaders",
-        value: JSON.stringify(settings.defaultHeaders),
+        value: JSON.stringify(restClientSettings.defaultHeaders),
         text: "Default Headers",
         info: "If particular headers are omitted in request headers, these will be added as headers for each request.",
         prompt: "Default Headers",
@@ -132,7 +157,7 @@ function restClientSettings(): Acode.PluginSettings {
       },
       {
         key: "timeoutInSeconds",
-        value: settings.timeoutInSeconds,
+        value: restClientSettings.timeoutInSeconds,
         text: "Timeout Seconds",
         info: "Timeout in seconds. 0 for infinity",
         prompt: "Timeout Seconds",
@@ -140,15 +165,29 @@ function restClientSettings(): Acode.PluginSettings {
       },
       {
         key: "requestNameAsResponseTabTitle",
-        checkbox: settings.requestNameAsResponseTabTitle,
+        checkbox: restClientSettings.requestNameAsResponseTabTitle,
         text: "Request Name As Response Tab Title",
         info: "Show request name as the response tab title",
       },
       {
         key: "previewResponseInUntitledDocument",
-        checkbox: settings.previewResponseInUntitledDocument,
+        checkbox: restClientSettings.previewResponseInUntitledDocument,
         text: "Preview Response In Untitled Document",
         info: "tPreview response in untitled document if set to true, otherwise displayed in html view",
+      },
+      {
+        key: "useContentDispositionFilename",
+        checkbox: restClientSettings.useContentDispositionFilename,
+        text: "Use Content Disposition Filename",
+        info: "Enable/disable using filename from 'content-disposition' header, when saving response body",
+      },
+      {
+        key: "mimeAndFileExtensionMapping",
+        value: JSON.stringify(restClientSettings.mimeAndFileExtensionMapping),
+        text: "Rest-client: Mime And File Extension Mapping",
+        info: 'Sets the custom mapping of mime type and file extension of saved response body (e.g., {"application/atom+xml": "xml"})',
+        prompt: "Mime And File Extension Mapping",
+        promptType: "textarea",
       },
     ],
     cb: (key: string, value: any) => {
@@ -157,6 +196,12 @@ function restClientSettings(): Acode.PluginSettings {
           value = JSON.parse(value);
         } catch {
           value = SystemSettings.DefaultSettings.defaultHeaders;
+        }
+      } else if (key === "mimeAndFileExtensionMapping") {
+        try {
+          value = JSON.parse(value);
+        } catch {
+          return;
         }
       }
 

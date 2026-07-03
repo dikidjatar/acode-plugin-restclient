@@ -1,3 +1,5 @@
+const Url = acode.require("url");
+
 class MimeType {
   public readonly type: string;
   public readonly subtype: string;
@@ -33,6 +35,25 @@ export class MimeUtility {
       .find((p) => p.startsWith("charset="))
       ?.split("=")[1];
     return new MimeType(type, subtype, charset);
+  }
+
+  public static getExtension(
+    contentTypeString: string | undefined,
+    mimeAndFileExtensionMapping: { [key: string]: string }
+  ): string {
+    if (!contentTypeString) {
+      return "";
+    }
+
+    const { essence } = this.parse(contentTypeString);
+
+    // Check if user has custom mapping for this content type first
+    if (essence in mimeAndFileExtensionMapping) {
+      const ext = mimeAndFileExtensionMapping[essence];
+      return ext.replace(/^(\.)+/, "");
+    }
+
+    return Url.extname(contentTypeString) || "";
   }
 
   public static isBrowserSupportedImageFormat(

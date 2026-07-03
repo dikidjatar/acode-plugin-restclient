@@ -9,6 +9,8 @@ export class SystemSettings implements IRestClientSettings {
   private _timeoutInSeconds!: number;
   private _requestNameAsResponseTabTitle!: boolean;
   private _previewResponseInUntitledDocument!: boolean;
+  private _useContentDispositionFilename!: boolean;
+  private _mimeAndFileExtensionMapping!: { [key: string]: string };
 
   public get followRedirect() {
     return this._followRedirect;
@@ -30,6 +32,14 @@ export class SystemSettings implements IRestClientSettings {
     return this._previewResponseInUntitledDocument;
   }
 
+  public get useContentDispositionFilename() {
+    return this._useContentDispositionFilename;
+  }
+
+  public get mimeAndFileExtensionMapping() {
+    return this._mimeAndFileExtensionMapping;
+  }
+
   private constructor() {
     appSettings.on("update:restClient", () => {
       this.initializeSettings();
@@ -47,6 +57,10 @@ export class SystemSettings implements IRestClientSettings {
       restClientSettings.requestNameAsResponseTabTitle;
     this._previewResponseInUntitledDocument =
       restClientSettings.previewResponseInUntitledDocument;
+    this._useContentDispositionFilename =
+      restClientSettings.useContentDispositionFilename;
+    this._mimeAndFileExtensionMapping =
+      restClientSettings.mimeAndFileExtensionMapping;
   }
 
   private static _instance: SystemSettings;
@@ -69,6 +83,8 @@ export class SystemSettings implements IRestClientSettings {
         timeoutInSeconds: 0,
         requestNameAsResponseTabTitle: false,
         previewResponseInUntitledDocument: false,
+        useContentDispositionFilename: true,
+        mimeAndFileExtensionMapping: {},
       };
     }
     return this._defaultSettings;
@@ -110,6 +126,14 @@ export class RestClientSettings implements IRestClientSettings {
 
   public get previewResponseInUntitledDocument() {
     return this.systemSettings.previewResponseInUntitledDocument;
+  }
+
+  public get useContentDispositionFilename() {
+    return this.systemSettings.useContentDispositionFilename;
+  }
+
+  public get mimeAndFileExtensionMapping() {
+    return this.systemSettings.mimeAndFileExtensionMapping;
   }
 
   private readonly systemSettings = SystemSettings.Instance;

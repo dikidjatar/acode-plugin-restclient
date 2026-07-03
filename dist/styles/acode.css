@@ -3,7 +3,14 @@
 }
 
 .rest-client-container {
+  width: 100%;
+  height: 100%;
   padding: 0 var(--container-paddding);
+  position: relative;
+}
+
+.rest-client-container .response-container {
+  user-select: auto !important;
 }
 
 a {
