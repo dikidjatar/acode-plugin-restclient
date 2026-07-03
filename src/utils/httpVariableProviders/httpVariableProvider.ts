@@ -1,4 +1,4 @@
-import type { EditorView } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import { HttpResponse } from "../../models/httpResponse";
 import { VariableType } from "../../models/variableType";
 

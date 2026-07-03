@@ -1,4 +1,4 @@
-import type { EditorView } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import { DocumentCache } from "../models/documentCache";
 import { HttpResponse } from "../models/httpResponse";
 

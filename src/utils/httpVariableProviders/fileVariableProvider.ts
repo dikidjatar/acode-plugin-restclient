@@ -1,4 +1,4 @@
-import type { EditorView } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import * as Constants from "../../common/constants";
 import { DocumentCache } from "../../models/documentCache";
 import { ResolveErrorMessage } from "../../models/httpVariableResolveResult";

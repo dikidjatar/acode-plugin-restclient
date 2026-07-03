@@ -1,5 +1,5 @@
-import type { SelectionRange } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import { SelectionRange } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import { isUndefinedOrNull } from "../base/types";
 import * as Constants from "../common/constants";
 import {

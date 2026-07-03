@@ -1,4 +1,4 @@
-import type { StreamParser, StringStream } from "@codemirror/language";
+import { StreamParser, StringStream } from "@codemirror/language";
 
 export type HttpLanguageMode = "top" | "json" | "xml" | "curl";
 
