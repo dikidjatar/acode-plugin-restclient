@@ -4,6 +4,8 @@ interface IRestClientSettings {
   readonly timeoutInSeconds: number;
   readonly requestNameAsResponseTabTitle: boolean;
   readonly previewResponseInUntitledDocument: boolean;
+  readonly useContentDispositionFilename: boolean;
+  readonly mimeAndFileExtensionMapping: { [key: string]: string };
 }
 
 declare namespace Acode {

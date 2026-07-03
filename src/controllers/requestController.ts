@@ -16,6 +16,9 @@ export class RequestController {
   private _httpClient: HttpClient;
   private _textDocumentView: HttpResponseTextDocumentView;
   private _view: HttpResponseView;
+  public get responseView(): HttpResponseView {
+    return this._view;
+  }
 
   constructor(context: Acode.PluginContext) {
     this._httpClient = new HttpClient();

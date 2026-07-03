@@ -1,24 +1,67 @@
+import contentDisposition from "content-disposition";
 import hljs from "highlight.js";
+import * as Constants from "../common/constants";
 import { SystemSettings } from "../models/configurationSettings";
 import { HttpRequest } from "../models/httpRequest";
 import { HttpResponse } from "../models/httpResponse";
 import { MimeUtility } from "../utils/mimeUtility";
-import { formatHeaders, isJSONString } from "../utils/misc";
+import { formatHeaders, getHeader, isJSONString } from "../utils/misc";
 import { ResponseFormatUtility } from "../utils/responseFormatUtility";
 
 const EditorFile = acode.require("EditorFile");
 const Url = acode.require("Url");
+const SideButton = acode.require("sidebutton");
 
 type FoldingRange = [number, number];
 
 export class HttpResponseView {
   private readonly container: HTMLElement;
-  private readonly editorFiles: Acode.EditorFile[] = [];
+  private readonly responseContainer: HTMLElement;
+  private editorFiles: Acode.EditorFile[] = [];
   private readonly settings: SystemSettings = SystemSettings.Instance;
+  private readonly editorFileResponses: Map<Acode.EditorFile, HttpResponse>;
+  private sideButtons: Acode.SideButton[] = [];
+
+  private activeEditorFile: Acode.EditorFile | undefined;
+  private get activeResponse(): HttpResponse | undefined {
+    return this.activeEditorFile
+      ? this.editorFileResponses.get(this.activeEditorFile)
+      : undefined;
+  }
 
   constructor(private readonly context: Acode.PluginContext) {
+    this.editorFileResponses = new Map();
     this.container = tag("div", { className: "rest-client-container" });
-    this.container.style.userSelect = "auto";
+    this.responseContainer = tag("div", { className: "response-container" });
+    this.container.append(this.responseContainer);
+    this.sideButtons.push(
+      SideButton({
+        text: "Save Full Response",
+        icon: "save",
+        onclick: async () => {
+          await this.save();
+        },
+      }),
+      SideButton({
+        text: "Save Response Body",
+        icon: "save",
+        onclick: async () => {
+          await this.saveBody();
+        },
+      }),
+      SideButton({
+        text: "Copy Response Body",
+        icon: "copy",
+        onclick: async () => {
+          await this.copyBody();
+        },
+      })
+    );
+    editorManager.on("switch-file", this.toggleSideButtons.bind(this));
+    editorManager.on("new-file", () =>
+      setTimeout(this.toggleSideButtons.bind(this), 300)
+    );
+    editorManager.on("remove-file", this.toggleSideButtons.bind(this));
   }
 
   public render(response: HttpResponse): void {
@@ -38,6 +81,7 @@ export class HttpResponseView {
         const index = this.editorFiles.findIndex((f) => f === editorFile);
         if (index !== -1) {
           this.editorFiles.splice(index, 1);
+          this.editorFileResponses.delete(editorFile);
         }
       });
 
@@ -47,11 +91,145 @@ export class HttpResponseView {
       editorFile.filename = this.getTitle(response);
     }
 
-    this.container.innerHTML = this.getHtmlForWebview(response);
+    this.responseContainer.innerHTML = this.getHtmlForWebview(response);
     editorFile.setCustomTitle(
       () => `${response.statusCode} ${response.statusMessage}`
     );
+
+    this.editorFileResponses.set(editorFile, response);
+    this.activeEditorFile = editorFile;
+
     editorFile.makeActive();
+  }
+
+  private toggleSideButtons() {
+    if (
+      this.activeResponse &&
+      editorManager.activeFile === this.activeEditorFile
+    ) {
+      this.showSideButtons();
+    } else {
+      this.hideSideButtons();
+    }
+  }
+
+  private showSideButtons() {
+    this.sideButtons.forEach((button) => button.show());
+  }
+
+  private hideSideButtons() {
+    this.sideButtons.forEach((button) => button.hide());
+  }
+
+  public async copyBody() {
+    if (this.activeResponse) {
+      await navigator.clipboard.writeText(this.activeResponse.body);
+    }
+  }
+
+  public async save() {
+    if (this.activeResponse) {
+      const fullResponse = this.getFullResponseString(this.activeResponse);
+      try {
+        await this.openSaveDialog(fullResponse);
+      } catch (err) {
+        acode.alert(
+          "ERROR",
+          `Failed to save latest response to disk: ${err?.message ?? err}`
+        );
+      }
+    }
+  }
+
+  public async saveBody() {
+    if (this.activeResponse) {
+      const fileName = HttpResponseView.getResponseBodyOuptutFilename(
+        this.activeResponse,
+        this.settings
+      );
+      try {
+        await this.openSaveDialog(this.activeResponse.body, fileName);
+      } catch (err) {
+        acode.alert(
+          "ERROR",
+          `Failed to save latest response body to disk: ${err?.message ?? err}`
+        );
+      }
+    }
+  }
+
+  private static getResponseBodyOuptutFilename(
+    activeResponse: HttpResponse,
+    settings: SystemSettings
+  ): string {
+    if (settings.useContentDispositionFilename) {
+      const cdHeader = getHeader(activeResponse.headers, "content-disposition");
+      if (cdHeader) {
+        const disposition = contentDisposition.parse(cdHeader);
+        if (
+          (disposition?.type === "attachment" ||
+            disposition?.type === "inline") &&
+          disposition?.parameters?.hasOwnProperty("filename")
+        ) {
+          const serverProvidedFilename = disposition.parameters.filename;
+          return serverProvidedFilename;
+        }
+      }
+    }
+
+    const extension = MimeUtility.getExtension(
+      activeResponse.contentType,
+      settings.mimeAndFileExtensionMapping
+    );
+    const defaultFileName = !extension
+      ? `Response-${Date.now()}`
+      : `Response-${Date.now()}.${extension}`;
+    return defaultFileName;
+  }
+
+  private getFullResponseString(response: HttpResponse): string {
+    const statusLine = `HTTP/${response.httpVersion} ${response.statusCode} ${response.statusMessage}${Constants.EOL}`;
+    const headerString = formatHeaders(response.headers);
+    const body = response.body ? `${Constants.EOL}${response.body}` : "";
+    return `${statusLine}${headerString}${body}`;
+  }
+
+  private async openSaveDialog(
+    content: string,
+    defaultFileName?: string
+  ): Promise<void> {
+    const selectedFolder = await acode.fileBrowser(
+      "folder",
+      "Select Path",
+      true
+    );
+    if (!selectedFolder || !selectedFolder.url) {
+      return;
+    }
+
+    const folderPath = selectedFolder.url;
+    const fileName = await acode.prompt(
+      "Enter file name",
+      defaultFileName || "",
+      "text",
+      {
+        required: true,
+      }
+    );
+    if (!fileName) {
+      return;
+    }
+
+    const uri = await acode
+      .fsOperation(folderPath)
+      .createFile(fileName, content);
+    const confirm = await acode.confirm(
+      "INFO",
+      `Saved to ${fileName}. Do you want to open the file?`
+    );
+    if (confirm === true) {
+      acode.newEditorFile(fileName, { uri });
+    }
   }
 
   private getTitle(response: HttpResponse): string {
@@ -204,5 +382,13 @@ ${formatHeaders(response.headers)}\r\n`,
     request: HttpRequest;
   }): boolean {
     return method.toLowerCase() === "head";
+  }
+
+  dispose(): void {
+    this.activeEditorFile?.remove(true);
+    this.hideSideButtons();
+    this.editorFiles = [];
+    this.sideButtons = [];
+    this.editorFileResponses.clear();
   }
 }
