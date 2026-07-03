@@ -1,11 +1,9 @@
-import { LanguageSupport, StreamLanguage } from "@codemirror/language";
 import plugin from "../plugin.json";
 import { RequestController } from "./controllers/requestController";
 import { httpCodeLensExtension } from "./language/httpCodeLensProvider";
-import { httpStreamParser } from "./language/httpLanguage";
+import { httpLanguage } from "./language/httpLanguage";
 import { SystemSettings } from "./models/configurationSettings";
 import { getFileExtension } from "./utils/misc";
-import { StateEffect } from "@codemirror/state";
 
 const editorLanguages = acode.require("editorLanguages");
 const commands = acode.require("commands");
@@ -29,7 +27,6 @@ class AcodePlugin {
       appSettings.value["restClient"] = SystemSettings.DefaultSettings;
       appSettings.update({}, true, true);
     }
-    this.dispatchView = this.dispatchView.bind(this);
   }
 
   init(context: Acode.PluginContext): void {
@@ -37,8 +34,6 @@ class AcodePlugin {
     this.setupStyle(context);
     this.registerHttpLanguage();
     this.registerCommands();
-    this.registerListeners();
-    this.dispatchView(editorManager.activeFile);
   }
 
   private setupStyle(context: Acode.PluginContext): void {
@@ -50,13 +45,11 @@ class AcodePlugin {
   }
 
   private registerHttpLanguage(): void {
-    const httpLanguage = StreamLanguage.define(httpStreamParser);
-    const httpLanguageSupport = new LanguageSupport(httpLanguage);
     editorLanguages.register(
       "http",
       ["http", "rest"],
       "HTTP / REST Client",
-      () => httpLanguageSupport
+      () => [httpLanguage(), httpCodeLensExtension]
     );
     editorManager.files.forEach((file) => {
       if (!isHttpFile(file)) {
@@ -98,24 +91,6 @@ class AcodePlugin {
     });
   }
 
-  private registerListeners(): void {
-    editorManager.on("new-file", this.dispatchView);
-    editorManager.on("switch-file", this.dispatchView);
-  }
-
-  private dispatchView(file: Acode.EditorFile): void {
-    if (!isHttpFile(file)) {
-      return;
-    }
-
-    setTimeout(() => {
-      const view = editorManager.editor;
-      view.dispatch({
-        effects: StateEffect.appendConfig.of(httpCodeLensExtension),
-      });
-    }, 500);
-  }
-
   destroy() {
     try {
       this.requestController.responseView.dispose();
@@ -124,8 +99,6 @@ class AcodePlugin {
       commands.removeCommand("rest-client.save-response");
       commands.removeCommand("rest-client.save-response-body");
       editorLanguages.unregister("http");
-      editorManager.off("new-file", this.dispatchView);
-      editorManager.off("switch-file", this.dispatchView);
       appSettings.update({ restClient: undefined }, false, true);
       this.style.remove();
     } catch (error) {
