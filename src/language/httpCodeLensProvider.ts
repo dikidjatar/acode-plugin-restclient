@@ -1,10 +1,8 @@
+import { Decoration, EditorView, WidgetType } from "@codemirror/view";
 import * as Constants from "../common/constants";
 import { Selector } from "../utils/selector";
+import { EditorSelection, RangeSetBuilder, StateField } from "@codemirror/state";
 
-const { Decoration, WidgetType, EditorView } =
-  acode.require("@codemirror/view");
-const { RangeSetBuilder, StateField, EditorSelection } =
-  acode.require("@codemirror/state");
 const commands = acode.require("commands");
 
 class SendRequestWidget extends WidgetType {

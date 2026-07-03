@@ -1,4 +1,4 @@
-import type { SelectionRange } from "@codemirror/state";
+import { SelectionRange } from "@codemirror/state";
 import {
   RequestSettings,
   RestClientSettings,

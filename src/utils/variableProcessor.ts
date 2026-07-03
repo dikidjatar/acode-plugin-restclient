@@ -1,4 +1,4 @@
-import type { EditorView } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import { FileVariableProvider } from "./httpVariableProviders/fileVariableProvider";
 import { HttpVariableProvider } from "./httpVariableProviders/httpVariableProvider";
 import { RequestVariableProvider } from "./httpVariableProviders/requestVariableProvider";

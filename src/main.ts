@@ -1,15 +1,13 @@
+import { LanguageSupport, StreamLanguage } from "@codemirror/language";
 import plugin from "../plugin.json";
 import { RequestController } from "./controllers/requestController";
 import { httpCodeLensExtension } from "./language/httpCodeLensProvider";
 import { httpStreamParser } from "./language/httpLanguage";
 import { SystemSettings } from "./models/configurationSettings";
 import { getFileExtension } from "./utils/misc";
+import { StateEffect } from "@codemirror/state";
 
 const editorLanguages = acode.require("editorLanguages");
-const { StreamLanguage, LanguageSupport } = acode.require(
-  "@codemirror/language"
-);
-const { StateEffect } = acode.require("@codemirror/state");
 const commands = acode.require("commands");
 const Url = acode.require("Url");
 const appSettings = acode.require("settings");

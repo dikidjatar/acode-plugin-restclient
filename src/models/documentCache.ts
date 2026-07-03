@@ -1,5 +1,5 @@
-import type { Text } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import { Text } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 
 type Container<T> = {
   value: T;
